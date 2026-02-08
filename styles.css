@@ -34,7 +34,7 @@ a:hover { text-decoration: underline; }
 }
 
 .brand { display: flex; gap: 12px; align-items: center; }
-.logo { width: 44px; height: 44px; border-radius: 10px; }
+.logo { width: 94px; height: 74px; border-radius: 10px; }
 .brandName { font-weight: 800; letter-spacing: 0.2px; font-size: 18px; }
 .brandTag { color: var(--muted); font-size: 13px; margin-top: 2px; }
 
