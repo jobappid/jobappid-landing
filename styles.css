@@ -45,12 +45,12 @@ a:hover { text-decoration: underline; }
 
 .brand { display: flex; gap: 12px; align-items: center; min-width: 0; }
 .logo {
-  width: 114px;
-  height: 84px;
+  width: 124px;
+  height: 94px;
   border-radius: 12px;
   object-fit: contain;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0, 0, 0, 0);
+  border: 1px solid rgba(0, 0, 0, 0);
 }
 .brandText { min-width: 0; }
 .brandName { font-weight: 900; letter-spacing: 0.2px; font-size: 18px; }
