@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JobAppID — Your Fast Track to Applying</title>
+    <link rel="icon" href="/assets/JobAppID-Logo.png" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">
+        <img src="/assets/JobAppID-Logo.png" alt="JobAppID" class="logo" />
+        <div class="brandText">
+          <div class="brandName">JobAppID</div>
+          <div class="brandTag">Tap. Apply. Done.</div>
+        </div>
+      </a>
+
+      <nav class="nav">
+        <a class="navLink" href="https://jobappid.com/activate">Activate</a>
+        <a class="navLink navLinkTiny" href="https://jobappid.com/business">Business Portal</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <h1>Skip the long applications.</h1>
+        <p class="subhead">
+          JobAppID helps you apply faster in-person. Once you have your JobAppID badge, you can tap at participating
+          kiosks and submit your application in seconds — no repeated forms, no hassle.
+        </p>
+
+        <div class="cards">
+          <div class="card">
+            <h3>How it works</h3>
+            <ol>
+              <li>Request your JobAppID badge</li>
+              <li>Activate it online</li>
+              <li>Tap at a kiosk to apply instantly</li>
+            </ol>
+          </div>
+
+          <div class="card">
+            <h3>What you get</h3>
+            <ul>
+              <li>A JobAppID badge mailed to you</li>
+              <li>Fast kiosk applications</li>
+              <li>Simple, repeatable process</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Built for real life</h3>
+            <p>
+              Whether you’re applying at restaurants, retail, or local businesses — JobAppID is designed to
+              make applying quick, clean, and consistent.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="request">
+        <h2>Request your JobAppID</h2>
+        <p class="hint">
+          Fill this out and we’ll send your request in. Expect delivery in <strong>7–10 business days</strong>.
+        </p>
+
+        <form id="requestForm" class="form">
+          <div class="row">
+            <div class="field">
+              <label>First name</label>
+              <input name="first_name" required autocomplete="given-name" />
+            </div>
+            <div class="field">
+              <label>Last name</label>
+              <input name="last_name" required autocomplete="family-name" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Email</label>
+              <input name="email" type="email" required autocomplete="email" />
+            </div>
+            <div class="field">
+              <label>Phone (optional)</label>
+              <input name="phone" autocomplete="tel" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Street address</label>
+            <input name="street" required autocomplete="street-address" />
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>City</label>
+              <input name="city" required autocomplete="address-level2" />
+            </div>
+            <div class="field">
+              <label>State</label>
+              <input name="state" required autocomplete="address-level1" />
+            </div>
+            <div class="field">
+              <label>ZIP</label>
+              <input name="zip" required autocomplete="postal-code" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Notes (optional)</label>
+              <input name="notes" placeholder="Apartment #, delivery instructions, etc." />
+            </div>
+          </div>
+
+          <button id="submitBtn" type="submit">Request JobAppID</button>
+
+          <div id="formMsg" class="msg" aria-live="polite"></div>
+
+          <div class="footerLinks">
+            <a href="https://jobappid.com/activate">Already have a badge? Activate here →</a>
+            <a class="tiny" href="https://jobappid.com/business">Business Portal</a>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div>© <span id="year"></span> JobAppID</div>
+      <div class="footerRight">
+        <a href="https://jobappid.com/activate">Activate</a>
+        <a class="tiny" href="https://jobappid.com/business">Business Portal</a>
+      </div>
+    </footer>
+
+    <script src="/script.js"></script>
+  </body>
+</html>
