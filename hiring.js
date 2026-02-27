@@ -1,6 +1,4 @@
 (() => {
-  // ✅ Set your API base (use your production API domain here)
-  // If your API is on the same domain, you can set API_BASE = "".
   const API_BASE = window.JOBAPPID_API_BASE || "https://api.jobappid.com";
 
   const US_STATES = [
@@ -62,7 +60,7 @@
     const pillClass = hiring ? "pill pill-ok" : "pill pill-off";
     const pillText = hiring ? "Hiring" : "Not hiring";
 
-    const html = `
+    return `
       <div class="result">
         <div class="result-head">
           <div class="biz-name">${escapeHtml(row.business_name || "")}</div>
@@ -76,7 +74,6 @@
         </div>
       </div>
     `;
-    return html;
   }
 
   async function apiGet(path, params) {
@@ -100,6 +97,8 @@
   async function loadCitiesForState(stateCode) {
     if (!citySelect) return;
 
+    const prev = citySelect.value || "";
+
     citySelect.disabled = true;
     citySelect.innerHTML = `<option value="">Loading cities…</option>`;
 
@@ -114,7 +113,13 @@
       citySelect.appendChild(opt);
     });
 
+    // Restore selection if still present
+    if (prev && cities.includes(prev)) citySelect.value = prev;
+
     citySelect.disabled = false;
+
+    // Helpful info
+    setCount(`Loaded ${cities.length} cities. Choose a city (optional) or click Refresh.`);
   }
 
   async function loadHiring() {
@@ -153,12 +158,13 @@
   async function onStateChange() {
     setError("");
     clearResults();
-    setCount("Select a city (optional) and click Refresh.");
+    setCount("Loading…");
 
     const st = stateSelect?.value || "";
     if (!st) {
       citySelect.disabled = true;
       citySelect.innerHTML = `<option value="">Select a state first</option>`;
+      setCount("Select a state to begin.");
       return;
     }
 
