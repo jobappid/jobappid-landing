@@ -1,424 +1,191 @@
-/* hiring.js — JobAppID Who’s Hiring (State -> City -> Results)
-   - No search bar
-   - State dropdown shows ALL 50 states
-   - City dropdown loads cities for selected state
-   - Results show business name + hiring status + optional positions
-*/
+(() => {
+  // ✅ Set your API base (use your production API domain here)
+  // If your API is on the same domain, you can set API_BASE = "".
+  const API_BASE = window.JOBAPPID_API_BASE || "https://api.jobappid.com";
 
-/** Optional API base override:
- *  - If you deploy API under same domain, leave blank.
- *  - If you need a different host, set:
- *      <meta name="jobappid-api-base" content="https://api.yourdomain.com">
- *    OR
- *      window.JOBAPPID_API_BASE = "https://api.yourdomain.com";
- */
-function getApiBase() {
-  const meta = document.querySelector('meta[name="jobappid-api-base"]');
-  const metaBase = meta ? String(meta.getAttribute("content") || "").trim() : "";
-  const winBase = typeof window !== "undefined" ? String(window.JOBAPPID_API_BASE || "").trim() : "";
-  const base = metaBase || winBase || ""; // "" means same-origin
-  return base.replace(/\/+$/, "");
-}
+  const US_STATES = [
+    ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+    ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["FL","Florida"],["GA","Georgia"],
+    ["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],
+    ["KY","Kentucky"],["LA","Louisiana"],["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],
+    ["MI","Michigan"],["MN","Minnesota"],["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],
+    ["NE","Nebraska"],["NV","Nevada"],["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],
+    ["NY","New York"],["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],
+    ["OR","Oregon"],["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],
+    ["SD","South Dakota"],["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],
+    ["VA","Virginia"],["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"]
+  ];
 
-// We call /api/public/* (same as your Express routes)
-const API_BASE = getApiBase();
+  const $ = (id) => document.getElementById(id);
 
-function apiUrl(path) {
-  // path should start with "/api/..."
-  return `${API_BASE}${path}`;
-}
+  const stateSelect = $("stateSelect");
+  const citySelect = $("citySelect");
+  const refreshBtn = $("refreshBtn");
+  const results = $("results");
+  const resultsCount = $("resultsCount");
+  const errorBox = $("errorBox");
 
-// 50 states (always show these in the dropdown)
-const US_STATES = [
-  { code: "AL", name: "Alabama" },
-  { code: "AK", name: "Alaska" },
-  { code: "AZ", name: "Arizona" },
-  { code: "AR", name: "Arkansas" },
-  { code: "CA", name: "California" },
-  { code: "CO", name: "Colorado" },
-  { code: "CT", name: "Connecticut" },
-  { code: "DE", name: "Delaware" },
-  { code: "FL", name: "Florida" },
-  { code: "GA", name: "Georgia" },
-  { code: "HI", name: "Hawaii" },
-  { code: "ID", name: "Idaho" },
-  { code: "IL", name: "Illinois" },
-  { code: "IN", name: "Indiana" },
-  { code: "IA", name: "Iowa" },
-  { code: "KS", name: "Kansas" },
-  { code: "KY", name: "Kentucky" },
-  { code: "LA", name: "Louisiana" },
-  { code: "ME", name: "Maine" },
-  { code: "MD", name: "Maryland" },
-  { code: "MA", name: "Massachusetts" },
-  { code: "MI", name: "Michigan" },
-  { code: "MN", name: "Minnesota" },
-  { code: "MS", name: "Mississippi" },
-  { code: "MO", name: "Missouri" },
-  { code: "MT", name: "Montana" },
-  { code: "NE", name: "Nebraska" },
-  { code: "NV", name: "Nevada" },
-  { code: "NH", name: "New Hampshire" },
-  { code: "NJ", name: "New Jersey" },
-  { code: "NM", name: "New Mexico" },
-  { code: "NY", name: "New York" },
-  { code: "NC", name: "North Carolina" },
-  { code: "ND", name: "North Dakota" },
-  { code: "OH", name: "Ohio" },
-  { code: "OK", name: "Oklahoma" },
-  { code: "OR", name: "Oregon" },
-  { code: "PA", name: "Pennsylvania" },
-  { code: "RI", name: "Rhode Island" },
-  { code: "SC", name: "South Carolina" },
-  { code: "SD", name: "South Dakota" },
-  { code: "TN", name: "Tennessee" },
-  { code: "TX", name: "Texas" },
-  { code: "UT", name: "Utah" },
-  { code: "VT", name: "Vermont" },
-  { code: "VA", name: "Virginia" },
-  { code: "WA", name: "Washington" },
-  { code: "WV", name: "West Virginia" },
-  { code: "WI", name: "Wisconsin" },
-  { code: "WY", name: "Wyoming" }
-];
-
-const el = (id) => document.getElementById(id);
-
-const stateSelect = el("stateSelect");
-const citySelect = el("citySelect");
-const refreshBtn = el("refreshBtn");
-const resultsEl = el("results");
-const resultsCountEl = el("resultsCount");
-const errorBoxEl = el("errorBox");
-
-function setError(msg) {
-  if (!errorBoxEl) return;
-  if (!msg) {
-    errorBoxEl.style.display = "none";
-    errorBoxEl.textContent = "";
-    return;
-  }
-  errorBoxEl.style.display = "block";
-  errorBoxEl.textContent = msg;
-}
-
-function setCount(text) {
-  if (resultsCountEl) resultsCountEl.textContent = text;
-}
-
-function setResultsHtml(html) {
-  if (resultsEl) resultsEl.innerHTML = html;
-}
-
-function escapeHtml(s) {
-  return String(s ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function toTitle(s) {
-  const v = String(s || "").trim();
-  if (!v) return "";
-  // "pekin" -> "Pekin", "new york" -> "New York"
-  return v
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
-    .join(" ");
-}
-
-function normalizeCity(s) {
-  // Keep as user expects; Title Case is usually friendlier
-  return toTitle(s);
-}
-
-function readSelectValue(selectEl) {
-  if (!selectEl) return "";
-  return String(selectEl.value || "").trim();
-}
-
-async function fetchJson(url) {
-  const resp = await fetch(url, { method: "GET" });
-  let json = null;
-  try {
-    json = await resp.json();
-  } catch {
-    json = null;
-  }
-  if (!resp.ok) {
-    const msg = json?.error?.message || `Request failed (HTTP ${resp.status})`;
-    throw new Error(msg);
-  }
-  if (!json || json.ok !== true) {
-    const msg = json?.error?.message || "Request failed.";
-    throw new Error(msg);
-  }
-  return json;
-}
-
-function fillStateDropdown() {
-  if (!stateSelect) return;
-
-  stateSelect.innerHTML = "";
-  const placeholder = document.createElement("option");
-  placeholder.value = "";
-  placeholder.textContent = "Select a state";
-  stateSelect.appendChild(placeholder);
-
-  for (const s of US_STATES) {
-    const opt = document.createElement("option");
-    opt.value = s.code;
-    opt.textContent = `${s.code} — ${s.name}`;
-    stateSelect.appendChild(opt);
-  }
-}
-
-function resetCityDropdown() {
-  if (!citySelect) return;
-  citySelect.innerHTML = "";
-  const placeholder = document.createElement("option");
-  placeholder.value = "";
-  placeholder.textContent = "Select a city";
-  citySelect.appendChild(placeholder);
-  citySelect.disabled = true;
-}
-
-function fillCityDropdown(cities) {
-  if (!citySelect) return;
-
-  citySelect.innerHTML = "";
-
-  // Allow "All cities" (empty value) once state is selected
-  const allOpt = document.createElement("option");
-  allOpt.value = "";
-  allOpt.textContent = "All cities";
-  citySelect.appendChild(allOpt);
-
-  for (const c of cities || []) {
-    const cityName = normalizeCity(c);
-    if (!cityName) continue;
-    const opt = document.createElement("option");
-    opt.value = cityName;
-    opt.textContent = cityName;
-    citySelect.appendChild(opt);
+  function setError(msg) {
+    if (!errorBox) return;
+    if (!msg) {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+      return;
+    }
+    errorBox.style.display = "block";
+    errorBox.textContent = msg;
   }
 
-  citySelect.disabled = false;
-}
-
-function renderBusinesses(data, state, city) {
-  const items = Array.isArray(data) ? data : [];
-
-  if (!state) {
-    setCount("Select a state to view results.");
-    setResultsHtml("");
-    return;
+  function setCount(msg) {
+    if (resultsCount) resultsCount.textContent = msg || "";
   }
 
-  if (!items.length) {
-    setCount(city ? `No businesses found in ${city}, ${state}.` : `No businesses found in ${state}.`);
-    setResultsHtml(`<div class="empty">No results.</div>`);
-    return;
+  function clearResults() {
+    if (results) results.innerHTML = "";
   }
 
-  // Group by city (helps readability without adding a search bar)
-  const groups = new Map();
-  for (const row of items) {
-    const c = normalizeCity(row?.city || "Unknown");
-    if (!groups.has(c)) groups.set(c, []);
-    groups.get(c).push(row);
+  function escapeHtml(s) {
+    return String(s || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
-  const groupKeys = Array.from(groups.keys()).sort((a, b) => a.localeCompare(b));
+  function renderRow(row) {
+    const hiring = !!row.is_hiring;
 
-  let html = "";
-  let total = 0;
+    const pos = Array.isArray(row.open_positions) ? row.open_positions : [];
+    const posText = pos.length ? pos.join(", ") : "No positions listed";
 
-  for (const c of groupKeys) {
-    const rows = groups.get(c) || [];
-    total += rows.length;
+    const pillClass = hiring ? "pill pill-ok" : "pill pill-off";
+    const pillText = hiring ? "Hiring" : "Not hiring";
 
-    html += `<div class="city-group">
-      <div class="city-title">${escapeHtml(c)}, ${escapeHtml(state)}</div>
-      <div class="cards">`;
+    const html = `
+      <div class="result">
+        <div class="result-head">
+          <div class="biz-name">${escapeHtml(row.business_name || "")}</div>
+          <div class="${pillClass}">${pillText}</div>
+        </div>
+        <div class="result-sub">
+          ${escapeHtml(row.city || "")}, ${escapeHtml(row.state || "")} ${escapeHtml(row.zip || "")}
+        </div>
+        <div class="result-pos">
+          <span class="label">Positions:</span> ${escapeHtml(posText)}
+        </div>
+      </div>
+    `;
+    return html;
+  }
 
-    for (const r of rows) {
-      const name = String(r?.business_name || "Business").trim();
-      const isHiring = !!r?.is_hiring;
+  async function apiGet(path, params) {
+    const url = new URL(API_BASE + path);
+    Object.entries(params || {}).forEach(([k, v]) => {
+      if (v == null) return;
+      const s = String(v).trim();
+      if (!s) return;
+      url.searchParams.set(k, s);
+    });
 
-      const pillClass = isHiring ? "pill pill-ok" : "pill pill-no";
-      const pillText = isHiring ? "Actively Hiring" : "Not Hiring";
+    const resp = await fetch(url.toString(), { method: "GET" });
+    const json = await resp.json().catch(() => ({}));
+    if (!resp.ok || !json || json.ok !== true) {
+      const msg = json?.error?.message || `Request failed (${resp.status})`;
+      throw new Error(msg);
+    }
+    return json;
+  }
 
-      // open_positions might be:
-      // - array of strings
-      // - array of objects
-      // - string
-      // - null
-      let positions = [];
-      const op = r?.open_positions;
+  async function loadCitiesForState(stateCode) {
+    if (!citySelect) return;
 
-      if (Array.isArray(op)) {
-        positions = op
-          .map((x) => {
-            if (typeof x === "string") return x.trim();
-            if (x && typeof x === "object") {
-              // common shape guesses without breaking:
-              return String(x.title || x.name || x.position || "").trim();
-            }
-            return "";
-          })
-          .filter(Boolean);
-      } else if (typeof op === "string") {
-        // If it's a CSV-ish string
-        positions = op
-          .split(",")
-          .map((x) => x.trim())
-          .filter(Boolean);
-      }
+    citySelect.disabled = true;
+    citySelect.innerHTML = `<option value="">Loading cities…</option>`;
 
-      const positionsHtml =
-        positions.length > 0
-          ? `<div class="positions">
-              <div class="positions-title">Open positions</div>
-              <ul class="positions-list">
-                ${positions.slice(0, 12).map((p) => `<li>${escapeHtml(p)}</li>`).join("")}
-              </ul>
-            </div>`
-          : `<div class="positions muted">Positions not listed.</div>`;
+    const json = await apiGet("/api/public/cities", { state: stateCode });
+    const cities = Array.isArray(json.data) ? json.data : [];
 
-      html += `<div class="biz-card">
-          <div class="biz-top">
-            <div class="biz-name">${escapeHtml(name)}</div>
-            <div class="${pillClass}">${escapeHtml(pillText)}</div>
-          </div>
+    citySelect.innerHTML = `<option value="">All cities</option>`;
+    cities.forEach((c) => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      citySelect.appendChild(opt);
+    });
 
-          <div class="biz-sub muted">
-            ${escapeHtml(normalizeCity(r?.city || ""))}${r?.zip ? ` • ${escapeHtml(r.zip)}` : ""}
-          </div>
+    citySelect.disabled = false;
+  }
 
-          ${positionsHtml}
-        </div>`;
+  async function loadHiring() {
+    setError("");
+    clearResults();
+    setCount("Loading…");
+
+    const st = stateSelect?.value || "";
+    const city = citySelect?.value || "";
+
+    const json = await apiGet("/api/public/hiring", { state: st, city });
+
+    const rows = Array.isArray(json.data) ? json.data : [];
+    setCount(`${rows.length} business${rows.length === 1 ? "" : "es"} found`);
+
+    if (!rows.length) {
+      results.innerHTML = `<div class="empty">No businesses found for this selection.</div>`;
+      return;
     }
 
-    html += `</div></div>`;
+    results.innerHTML = rows.map(renderRow).join("");
   }
 
-  setCount(`${total} business${total === 1 ? "" : "es"} found${city ? ` in ${city}, ${state}` : ` in ${state}`}.`);
-  setResultsHtml(html);
-}
+  function initStateDropdown() {
+    if (!stateSelect) return;
 
-async function loadCitiesForState(stateCode) {
-  setError("");
-  resetCityDropdown();
-
-  if (!stateCode) return;
-
-  setCount("Loading cities…");
-  try {
-    const json = await fetchJson(apiUrl(`/api/public/cities?state=${encodeURIComponent(stateCode)}`));
-    const cities = Array.isArray(json.cities) ? json.cities : [];
-    fillCityDropdown(cities);
-    setCount("Select a city (or All cities).");
-  } catch (e) {
-    setError(e?.message || "Failed to load cities.");
-    setCount("Error loading cities.");
-  }
-}
-
-async function loadHiringResults() {
-  setError("");
-
-  const state = readSelectValue(stateSelect);
-  const city = readSelectValue(citySelect);
-
-  if (!state) {
-    renderBusinesses([], "", "");
-    return;
-  }
-
-  setCount("Loading…");
-  setResultsHtml("");
-
-  const qs = new URLSearchParams();
-  qs.set("state", state);
-  if (city) qs.set("city", city);
-
-  const url = apiUrl(`/api/public/hiring?${qs.toString()}`);
-
-  try {
-    const json = await fetchJson(url);
-    renderBusinesses(json.data || [], state, city);
-  } catch (e) {
-    setError(e?.message || "Failed to load results.");
-    setCount("Error loading results.");
-    setResultsHtml("");
-  }
-}
-
-function attachEvents() {
-  if (stateSelect) {
-    stateSelect.addEventListener("change", async () => {
-      const state = readSelectValue(stateSelect);
-
-      // reset city each time state changes
-      resetCityDropdown();
-
-      if (!state) {
-        setCount("Select a state to view results.");
-        setResultsHtml("");
-        return;
-      }
-
-      await loadCitiesForState(state);
-      await loadHiringResults(); // show "All cities" results immediately
+    stateSelect.innerHTML = `<option value="">Select a state</option>`;
+    US_STATES.forEach(([code, name]) => {
+      const opt = document.createElement("option");
+      opt.value = code;
+      opt.textContent = `${code} — ${name}`;
+      stateSelect.appendChild(opt);
     });
   }
 
-  if (citySelect) {
-    citySelect.addEventListener("change", async () => {
-      await loadHiringResults();
-    });
+  async function onStateChange() {
+    setError("");
+    clearResults();
+    setCount("Select a city (optional) and click Refresh.");
+
+    const st = stateSelect?.value || "";
+    if (!st) {
+      citySelect.disabled = true;
+      citySelect.innerHTML = `<option value="">Select a state first</option>`;
+      return;
+    }
+
+    try {
+      await loadCitiesForState(st);
+      await loadHiring(); // auto-load results after cities populate
+    } catch (e) {
+      setError(e?.message || "Failed to load cities.");
+      citySelect.disabled = true;
+      citySelect.innerHTML = `<option value="">(Cities unavailable)</option>`;
+    }
   }
 
-  if (refreshBtn) {
-    refreshBtn.addEventListener("click", async () => {
-      await loadHiringResults();
-    });
-  }
-}
-
-async function init() {
-  fillStateDropdown();
-  resetCityDropdown();
-  attachEvents();
-
-  // Default UI text
-  setCount("Select a state to view results.");
-  setResultsHtml("");
-
-  // Optional: if you ever want to auto-select a state via URL (?state=IL&city=Chicago)
-  const url = new URL(window.location.href);
-  const qsState = String(url.searchParams.get("state") || "").trim().toUpperCase();
-  const qsCity = String(url.searchParams.get("city") || "").trim();
-
-  if (qsState && stateSelect) {
-    stateSelect.value = qsState;
-    await loadCitiesForState(qsState);
+  function wire() {
+    initStateDropdown();
 
     if (citySelect) {
-      // Try to match city
-      const wanted = normalizeCity(qsCity);
-      if (wanted) {
-        const opts = Array.from(citySelect.options).map((o) => String(o.value || ""));
-        if (opts.includes(wanted)) citySelect.value = wanted;
-      }
+      citySelect.disabled = true;
+      citySelect.innerHTML = `<option value="">Select a state first</option>`;
     }
 
-    await loadHiringResults();
-  }
-}
+    if (stateSelect) stateSelect.addEventListener("change", () => onStateChange());
+    if (citySelect) citySelect.addEventListener("change", () => loadHiring().catch((e) => setError(e.message)));
+    if (refreshBtn) refreshBtn.addEventListener("click", () => loadHiring().catch((e) => setError(e.message)));
 
-init();
+    setCount("Select a state to begin.");
+  }
+
+  wire();
+})();
