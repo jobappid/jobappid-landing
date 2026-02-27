@@ -1,518 +1,71 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>JobAppID — Who’s Hiring</title>
-  <meta name="description" content="See which JobAppID businesses are hiring right now. Filter by state and city, search businesses, and view open positions." />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>JobAppID — Who’s Hiring</title>
 
-  <style>
-    :root{
-      --bg:#0b0b0f;
-      --panel:#11121a;
-      --panel2:#0f1017;
-      --text:#f3f4f6;
-      --muted:#a9adbb;
-      --border:#26283a;
-      --brand:#f5c937;
-      --good:#34d399;
-      --bad:#fb7185;
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --radius:16px;
-      --radius2:22px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 800px at 20% -10%, rgba(245,201,55,.12), transparent 60%),
-                  radial-gradient(1200px 800px at 90% 0%, rgba(56,189,248,.08), transparent 60%),
-                  var(--bg);
-      color:var(--text);
-    }
-    a{color:inherit; text-decoration:none}
-    .wrap{max-width:1100px; margin:0 auto; padding:22px 16px 54px}
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:14px; padding:12px 14px;
-      border:1px solid var(--border); background:rgba(17,18,26,.7);
-      backdrop-filter: blur(10px);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-    }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      min-width: 240px;
-    }
-    .brand img{
-      width: 74px; height: 74px; object-fit: contain;
-      border-radius: 0px; background: rgba(0,0,0,.0);
-      border:0px solid rgba(255,255,255,.06);
-    }
-    .brand .t1{font-weight:800; letter-spacing:.2px}
-    .brand .t2{color:var(--muted); font-size:12px; margin-top:2px}
-    .nav{
-      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .nav a{
-      padding:10px 12px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius: 12px;
-      background: rgba(0,0,0,.18);
-      color: var(--text);
-      font-size:14px;
-    }
-    .nav a:hover{border-color: rgba(245,201,55,.45)}
-    .hero{
-      margin-top:18px;
-      padding:18px 18px 14px;
-      border:1px solid var(--border);
-      border-radius: var(--radius2);
-      background: linear-gradient(180deg, rgba(17,18,26,.9), rgba(15,16,23,.85));
-      box-shadow: var(--shadow);
-    }
-    .hero h1{margin:0; font-size:24px; letter-spacing:.2px}
-    .hero p{margin:8px 0 0; color:var(--muted); line-height:1.45}
-    .controls{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: 1.4fr 0.7fr 0.9fr 0.65fr;
-      gap:10px;
-    }
-    @media (max-width: 860px){
-      .controls{grid-template-columns: 1fr 1fr; }
-      .brand{min-width:auto}
-    }
-    @media (max-width: 520px){
-      .controls{grid-template-columns: 1fr; }
-    }
-    input, select, button{
-      width:100%;
-      padding:12px 12px;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.20);
-      color: var(--text);
-      outline:none;
-      font-size:14px;
-    }
-    input::placeholder{color: rgba(169,173,187,.75)}
-    button{
-      cursor:pointer;
-      background: linear-gradient(180deg, rgba(245,201,55,.95), rgba(245,201,55,.78));
-      border: 1px solid rgba(245,201,55,.85);
-      color: #101014;
-      font-weight: 800;
-    }
-    button:disabled{
-      opacity:.6; cursor:not-allowed;
-    }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      font-size:12px; padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      color: var(--muted);
-      user-select:none;
-    }
-    .pill.good{
-      border-color: rgba(52,211,153,.35);
-      background: rgba(52,211,153,.10);
-      color: #b8f7df;
-    }
-    .pill.bad{
-      border-color: rgba(251,113,133,.35);
-      background: rgba(251,113,133,.10);
-      color: #ffd1da;
-    }
-    .metaRow{
-      margin-top:12px;
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px; flex-wrap:wrap;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .grid{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap:12px;
-    }
-    @media (max-width: 900px){ .grid{grid-template-columns: 1fr} }
-    .card{
-      border:1px solid var(--border);
-      border-radius: var(--radius2);
-      background: rgba(17,18,26,.75);
-      box-shadow: var(--shadow);
-      padding:14px 14px 12px;
-      overflow:hidden;
-    }
-    .cardTop{
-      display:flex; align-items:flex-start; justify-content:space-between;
-      gap:12px;
-    }
-    .bizName{
-      font-size:16px; font-weight:850; letter-spacing:.2px;
-      margin:0;
-    }
-    .loc{
-      margin-top:6px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .positions{
-      margin-top:12px;
-      padding-top:12px;
-      border-top:1px dashed rgba(255,255,255,.10);
-    }
-    .positionsTitle{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
-      margin:0 0 8px 0;
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .16em;
-    }
-    .tags{
-      display:flex; flex-wrap:wrap; gap:8px;
-    }
-    .tag{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.16);
-      font-size: 13px;
-      color: var(--text);
-    }
-    .tag small{color: var(--muted); font-size: 12px}
-    .empty{
-      margin-top:14px;
-      border:1px dashed rgba(255,255,255,.14);
-      border-radius: var(--radius2);
-      padding:16px;
-      color: var(--muted);
-      text-align:center;
-      background: rgba(0,0,0,.10);
-    }
-    .err{
-      margin-top:14px;
-      border:1px solid rgba(251,113,133,.35);
-      border-radius: var(--radius2);
-      padding:14px;
-      color:#ffd1da;
-      background: rgba(251,113,133,.10);
-      white-space: pre-wrap;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 12px;
-    }
-    footer{
-      margin-top:22px;
-      color: rgba(169,173,187,.75);
-      font-size: 12px;
-      text-align:center;
-    }
-  </style>
-</head>
+    <!-- Page-only CSS (does NOT affect your main site) -->
+    <link rel="stylesheet" href="./hiring.css" />
+  </head>
 
-<body>
-  <div class="wrap">
-    <div class="topbar">
+  <body>
+    <div class="bg"></div>
+
+    <header class="topbar">
       <div class="brand">
-        <!-- Optional: replace with your real icon path if you have one -->
-        <img src="/assets/JobAppID-Logo.png" alt="JobAppID Logo" />
-        <div>
-          <div class="t1">JobAppID</div>
-          <div class="t2">Public Hiring Directory</div>
+        <img class="brand-logo" src="./assets/JobAppID-Logo.png" alt="JobAppID" />
+        <div class="brand-text">
+          <div class="brand-name">JobAppID</div>
+          <div class="brand-sub">Public Hiring Directory</div>
         </div>
       </div>
 
-      <div class="nav">
-        <a href="/">Home</a>
-        <a href="/hiring.html" style="border-color: rgba(245,201,55,.55)">Who’s Hiring</a>
-      </div>
-    </div>
+      <nav class="nav">
+        <a class="nav-btn" href="/">Home</a>
+        <a class="nav-btn active" href="/hiring">Who’s Hiring</a>
+      </nav>
+    </header>
 
-    <div class="hero">
-      <h1>Who’s Hiring</h1>
-      <p>
-        Browse JobAppID partner businesses currently accepting applications. Filter by state and city,
-        search by business name, and view open positions in real time.
-      </p>
+    <main class="wrap">
+      <section class="card">
+        <h1>Who’s Hiring</h1>
+        <p class="lead">
+          Browse JobAppID partner businesses by state and city. Hiring status updates automatically
+          based on kiosk mode and position availability.
+        </p>
 
-      <div class="controls">
-        <input id="q" placeholder="Search business name (e.g., Walmart, Casey’s)…" autocomplete="off" />
-        <select id="state">
-          <option value="">All States</option>
-        </select>
-        <select id="city" disabled>
-          <option value="">All Cities</option>
-        </select>
-        <select id="hiring">
-          <option value="true">Hiring Only</option>
-          <option value="">Show All</option>
-          <option value="false">Not Hiring Only</option>
-        </select>
-      </div>
-
-      <div class="metaRow">
-        <div id="metaLeft">Loading…</div>
-        <div style="display:flex; gap:10px; align-items:center;">
-        <button id="refreshBtn" style="width:auto; padding:12px 14px;">Refresh</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="err" class="err" style="display:none;"></div>
-    <div id="grid" class="grid"></div>
-    <div id="empty" class="empty" style="display:none;">
-      No businesses match your filters right now.
-    </div>
-
-    <footer>
-      Powered by JobAppID • Hiring status updates automatically based on kiosk/position availability.
-    </footer>
-  </div>
-
-  <script>
-    /**
-     * ============================
-     * CONFIG — SET YOUR API URL
-     * ============================
-     * This should be the public base where your Express API is hosted.
-     * Example:
-     *   https://api.jobappid.com
-     *   https://jobappid-api.yourdomain.com
-     *
-     * Final endpoint used:
-     *   ${API_BASE}/api/public/hiring
-     */
-    const API_BASE = "https://api.jobappid.com";
-
-    const $ = (id) => document.getElementById(id);
-
-    const elQ = $("q");
-    const elState = $("state");
-    const elCity = $("city");
-    const elHiring = $("hiring");
-    const elGrid = $("grid");
-    const elEmpty = $("empty");
-    const elErr = $("err");
-    const elMetaLeft = $("metaLeft");
-    const elApiPill = $("apiPill");
-    const elRefresh = $("refreshBtn");
-
-    let allRows = []; // full dataset from API
-    let citiesByState = new Map();
-
-    function uniqSorted(arr) {
-      return Array.from(new Set(arr.filter(Boolean).map(String))).sort((a,b)=>a.localeCompare(b));
-    }
-
-    function setApiPill(ok, text) {
-      elApiPill.classList.remove("good","bad");
-      if (ok === true) elApiPill.classList.add("good");
-      if (ok === false) elApiPill.classList.add("bad");
-      elApiPill.textContent = text;
-    }
-
-    function showError(msg) {
-      elErr.style.display = "block";
-      elErr.textContent = msg || "Unknown error";
-    }
-
-    function clearError() {
-      elErr.style.display = "none";
-      elErr.textContent = "";
-    }
-
-    function buildFilters() {
-      const states = uniqSorted(allRows.map(r => r.state));
-      elState.innerHTML = `<option value="">All States</option>` + states.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
-
-      citiesByState = new Map();
-      for (const r of allRows) {
-        const st = String(r.state || "");
-        const ct = String(r.city || "");
-        if (!st || !ct) continue;
-        if (!citiesByState.has(st)) citiesByState.set(st, new Set());
-        citiesByState.get(st).add(ct);
-      }
-    }
-
-    function refreshCityOptions() {
-      const st = String(elState.value || "");
-      const cities = st && citiesByState.has(st) ? uniqSorted(Array.from(citiesByState.get(st))) : [];
-      elCity.disabled = !st || cities.length === 0;
-      const cur = String(elCity.value || "");
-
-      elCity.innerHTML = `<option value="">All Cities</option>` + cities.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-
-      // preserve selection if still valid
-      if (cur && cities.includes(cur)) elCity.value = cur;
-      else elCity.value = "";
-    }
-
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function passesFilters(row) {
-      const q = String(elQ.value || "").trim().toLowerCase();
-      const st = String(elState.value || "").trim();
-      const ct = String(elCity.value || "").trim();
-      const hiring = String(elHiring.value || "").trim(); // "true" | "false" | ""
-
-      if (st && String(row.state || "") !== st) return false;
-      if (ct && String(row.city || "") !== ct) return false;
-
-      if (hiring === "true" && row.is_hiring !== true) return false;
-      if (hiring === "false" && row.is_hiring !== false) return false;
-
-      if (q) {
-        const name = String(row.business_name || "").toLowerCase();
-        if (!name.includes(q)) return false;
-      }
-
-      return true;
-    }
-
-    function render() {
-      clearError();
-      elGrid.innerHTML = "";
-      elEmpty.style.display = "none";
-
-      const filtered = allRows.filter(passesFilters);
-
-      // meta
-      const total = allRows.length;
-      const showing = filtered.length;
-      elMetaLeft.textContent = `${showing} result${showing===1?"":"s"} (of ${total})`;
-
-      if (filtered.length === 0) {
-        elEmpty.style.display = "block";
-        return;
-      }
-
-      for (const r of filtered) {
-        const isHiring = r.is_hiring === true;
-        const pillClass = isHiring ? "pill good" : "pill bad";
-        const pillText = isHiring ? "Hiring" : "Not Hiring";
-
-        const pos = Array.isArray(r.open_positions) ? r.open_positions : [];
-        const tags = pos.length
-          ? pos.map(p => {
-              const title = escapeHtml(p.title || "Position");
-              const max = p.max_active_apps == null ? "" : ` • max ${escapeHtml(String(p.max_active_apps))}`;
-              return `<span class="tag">${title}<small>${max}</small></span>`;
-            }).join("")
-          : `<span class="tag" style="opacity:.75">No open positions</span>`;
-
-        const html = `
-          <div class="card">
-            <div class="cardTop">
-              <div>
-                <h3 class="bizName">${escapeHtml(r.business_name || "Business")}</h3>
-                <div class="loc">${escapeHtml(r.city || "")}${r.city && r.state ? ", " : ""}${escapeHtml(r.state || "")}${r.zip ? " " + escapeHtml(r.zip) : ""}</div>
-              </div>
-              <div class="${pillClass}">${pillText}</div>
-            </div>
-
-            <div class="positions">
-              <div class="positionsTitle">
-                <span>Open positions</span>
-                <span style="color:rgba(169,173,187,.75)">${pos.length} open</span>
-              </div>
-              <div class="tags">${tags}</div>
-            </div>
+        <div class="filters">
+          <div class="filter">
+            <label for="stateSelect">State</label>
+            <select id="stateSelect"></select>
           </div>
-        `;
 
-        elGrid.insertAdjacentHTML("beforeend", html);
-      }
-    }
+          <div class="filter">
+            <label for="citySelect">City</label>
+            <select id="citySelect" disabled></select>
+          </div>
 
-    async function fetchHiring() {
-      clearError();
+          <div class="filter actions">
+            <button id="refreshBtn" type="button">Refresh</button>
+          </div>
+        </div>
 
-      // basic guard
-      if (!API_BASE || API_BASE.includes("YOUR-API-DOMAIN-HERE")) {
-        setApiPill(false, "API: configure URL");
-        showError(
-          "CONFIG REQUIRED:\n\nOpen hiring.html and set:\n\n  const API_BASE = \"https://YOUR-API-DOMAIN-HERE\";\n\nExample:\n  const API_BASE = \"https://api.jobappid.com\";"
-        );
-        return;
-      }
+        <div class="meta">
+          <span id="resultsCount">Loading…</span>
+        </div>
 
-      setApiPill(null, "API: loading…");
-      elMetaLeft.textContent = "Loading…";
-      elRefresh.disabled = true;
+        <div id="errorBox" class="error" style="display:none;"></div>
 
-      try {
-        const resp = await fetch("/api/public/hiring", { method: "GET" });
+        <div id="results" class="results"></div>
 
-        if (!resp.ok) {
-          const txt = await resp.text().catch(()=> "");
-          setApiPill(false, "API: error");
-          showError("API ERROR (" + resp.status + ")\n\n" + (txt || "Request failed"));
-          elRefresh.disabled = false;
-          return;
-        }
+        <div class="footer-note">
+          Powered by JobAppID • Hiring status is driven by kiosk “hiring / not hiring” mode.
+        </div>
+      </section>
+    </main>
 
-        const json = await resp.json().catch(()=>null);
-        if (!json || json.ok !== true || !Array.isArray(json.data)) {
-          setApiPill(false, "API: invalid");
-          showError("API returned unexpected payload.\n\nExpected:\n{ ok: true, data: [...] }");
-          elRefresh.disabled = false;
-          return;
-        }
-
-        allRows = json.data;
-
-        setApiPill(true, "API: connected");
-        buildFilters();
-        refreshCityOptions();
-        render();
-      } catch (e) {
-        setApiPill(false, "API: offline");
-        showError("NETWORK ERROR\n\n" + (e && e.message ? e.message : String(e)));
-      } finally {
-        elRefresh.disabled = false;
-      }
-    }
-
-    // Events (with small debounce on text search)
-    let tDebounce = null;
-    elQ.addEventListener("input", () => {
-      clearTimeout(tDebounce);
-      tDebounce = setTimeout(() => render(), 150);
-    });
-
-    elState.addEventListener("change", () => {
-      refreshCityOptions();
-      render();
-    });
-
-    elCity.addEventListener("change", () => render());
-    elHiring.addEventListener("change", () => render());
-    elRefresh.addEventListener("click", () => fetchHiring());
-
-    // boot
-    fetchHiring();
-  </script>
-</body>
-
+    <!-- Page-only JS (does NOT affect your main site) -->
+    <script src="./hiring.js"></script>
+  </body>
 </html>
-
-
-
-
