@@ -13,6 +13,7 @@
 
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
+
 body{
   margin:0;
   font-family: Arial, Helvetica, sans-serif;
@@ -30,7 +31,6 @@ body{
   background:
     radial-gradient(700px 450px at 30% 40%, rgba(245,201,55,0.08), rgba(0,0,0,0) 60%),
     radial-gradient(700px 450px at 70% 55%, rgba(0,160,255,0.06), rgba(0,0,0,0) 62%);
-  filter: blur(0px);
   opacity: 1;
 }
 
@@ -176,12 +176,113 @@ button:disabled{
   white-space: pre-wrap;
 }
 
+/* =========================
+   RESULTS LIST (PRO LOOK)
+   Works with your .result markup
+   ========================= */
+
 .results{
   margin-top: 16px;
   display:grid;
+  gap: 10px;
+}
+
+/* Your JS creates <div class="result"> ... */
+.result{
+  position: relative;
+  border: 1px solid rgba(35,42,53,0.9);
+  border-radius: 16px;
+  background: rgba(9,12,16,0.55);
+  padding: 12px 14px 12px 18px;
+}
+
+/* bullet accent */
+.result::before{
+  content: "•";
+  position: absolute;
+  left: 10px;
+  top: 13px;
+  color: rgba(245,201,55,0.95);
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* header row */
+.result-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
   gap: 12px;
 }
 
+/* ONLY business name is bold */
+.biz-name{
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.1px;
+  margin: 0;
+}
+
+/* status pill */
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(35,42,53,0.9);
+  background: rgba(12,15,20,0.7);
+  font-size: 12px;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.pill-ok{
+  border-color: rgba(57,217,138,0.45);
+  background: rgba(57,217,138,0.12);
+  color: #bff4dc;
+}
+
+.pill-off{
+  border-color: rgba(255,107,107,0.5);
+  background: rgba(255,107,107,0.12);
+  color: #ffd7d7;
+}
+
+/* address line smaller + not bold */
+.result-sub{
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* positions line smaller + not bold */
+.result-pos{
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(35,42,53,0.55);
+  color: rgba(174,183,196,0.92);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.result-pos .label{
+  color: rgba(233,237,242,0.9);
+  font-weight: 700;
+}
+
+/* If you ever render a UL for positions later */
+.result-pos ul{
+  margin: 8px 0 0;
+  padding: 0 0 0 18px;
+}
+
+/* =========================
+   Backward compatibility:
+   If any old markup still uses .row/.biz/.sub/.positions
+   ========================= */
 .row{
   border: 1px solid rgba(35,42,53,0.9);
   border-radius: 16px;
@@ -198,7 +299,7 @@ button:disabled{
 
 .biz{
   font-weight: 800;
-  font-size: 16px;
+  font-size: 15px;
   margin: 0;
 }
 
@@ -206,30 +307,7 @@ button:disabled{
   margin-top: 4px;
   color: var(--muted);
   font-size: 12px;
-}
-
-.pill{
-  display:inline-flex;
-  align-items:center;
-  gap: 8px;
-  padding: 7px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(35,42,53,0.9);
-  background: rgba(12,15,20,0.7);
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-.pill.good{
-  border-color: rgba(57,217,138,0.45);
-  background: rgba(57,217,138,0.12);
-  color: #bff4dc;
-}
-
-.pill.bad{
-  border-color: rgba(255,107,107,0.5);
-  background: rgba(255,107,107,0.12);
-  color: #ffd7d7;
+  font-weight: 400;
 }
 
 .positions{
@@ -237,12 +315,35 @@ button:disabled{
   padding-top: 12px;
   border-top: 1px solid rgba(35,42,53,0.55);
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .positions ul{
   margin: 8px 0 0;
   padding: 0 0 0 18px;
+}
+
+/* =========================
+   Optional group styles
+   (cleaned, no duplicates)
+   ========================= */
+.group{
+  margin-top: 14px;
+}
+
+.group-title{
+  font-weight: 800;
+  margin: 10px 0;
+  opacity: 0.95;
+  font-size: 13px;
+  color: rgba(233,237,242,0.95);
+}
+
+.biz-divider{
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 10px 0 0 22px;
 }
 
 .footer-note{
@@ -257,52 +358,4 @@ button:disabled{
 @media (max-width: 820px){
   .filters{ grid-template-columns: 1fr; }
   .brand{ min-width: unset; }
-}
-.group { margin-top: 14px; }
-.group-title { font-weight: 700; margin: 8px 0; }
-
-.biz-ul {
-  margin: 0 0 10px 18px;
-  padding: 0;
-}
-
-.biz-li {
-  margin: 10px 0;
-}
-
-.biz-li-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.biz-li-name {
-  font-weight: 700;
-}
-
-.biz-li-sub {
-  margin-top: 6px;
-  opacity: 0.9;
-}
-.group { margin-top: 14px; }
-.group-title { font-weight: 700; margin: 10px 0; opacity: 0.95; }
-
-.biz-row { padding: 8px 0; }
-.biz-row-title { display: flex; align-items: center; gap: 8px; }
-
-.biz-bullet {
-  display: inline-block;
-  width: 14px;
-  opacity: 0.95;
-}
-
-.biz-name { font-weight: 700; }
-
-.biz-row-sub { margin-left: 22px; opacity: 0.9; }
-.biz-row-pos { margin-left: 22px; opacity: 0.9; margin-top: 4px; }
-
-.biz-divider {
-  height: 1px;
-  background: rgba(255,255,255,0.08);
-  margin: 10px 0 0 22px;
 }
