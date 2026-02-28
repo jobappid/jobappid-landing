@@ -258,3 +258,29 @@ button:disabled{
   .filters{ grid-template-columns: 1fr; }
   .brand{ min-width: unset; }
 }
+.group { margin-top: 14px; }
+.group-title { font-weight: 700; margin: 8px 0; }
+
+.biz-ul {
+  margin: 0 0 10px 18px;
+  padding: 0;
+}
+
+.biz-li {
+  margin: 10px 0;
+}
+
+.biz-li-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.biz-li-name {
+  font-weight: 700;
+}
+
+.biz-li-sub {
+  margin-top: 6px;
+  opacity: 0.9;
+}
