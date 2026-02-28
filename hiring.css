@@ -212,7 +212,7 @@ button:disabled{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
-  gap: 4px;
+  gap: 12px;
 }
 
 /* ONLY business name is bold */
@@ -269,7 +269,7 @@ button:disabled{
 }
 
 .result-pos .label{
-  color: rgba(233,237,242,0.9);
+  color: rgba(233, 193, 17, 0.9);
   font-weight: 700;
 }
 
