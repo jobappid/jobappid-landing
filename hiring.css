@@ -284,3 +284,25 @@ button:disabled{
   margin-top: 6px;
   opacity: 0.9;
 }
+.group { margin-top: 14px; }
+.group-title { font-weight: 700; margin: 10px 0; opacity: 0.95; }
+
+.biz-row { padding: 8px 0; }
+.biz-row-title { display: flex; align-items: center; gap: 8px; }
+
+.biz-bullet {
+  display: inline-block;
+  width: 14px;
+  opacity: 0.95;
+}
+
+.biz-name { font-weight: 700; }
+
+.biz-row-sub { margin-left: 22px; opacity: 0.9; }
+.biz-row-pos { margin-left: 22px; opacity: 0.9; margin-top: 4px; }
+
+.biz-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 10px 0 0 22px;
+}

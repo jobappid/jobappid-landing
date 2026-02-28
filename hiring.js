@@ -76,25 +76,35 @@
   }
 
   // Renders a single business row as a bullet line
-  function renderBizLi(row) {
-    const hiring = !!row.is_hiring;
+  function renderBizRow(row) {
+  const hiring = !!row.is_hiring;
 
-    const pillClass = hiring ? "pill pill-ok" : "pill pill-off";
-    const pillText = hiring ? "Hiring" : "Not hiring";
-    const posText = positionsText(row);
+  const pillClass = hiring ? "pill pill-ok" : "pill pill-off";
+  const pillText = hiring ? "Hiring" : "Not hiring";
+  const posText = positionsText(row);
 
-    return `
-      <li class="biz-li">
-        <div class="biz-li-head">
-          <span class="biz-li-name">${escapeHtml(row.business_name || "")}</span>
+  return `
+    <div class="biz-row">
+      <div class="biz-row-head">
+        <div class="biz-row-title">
+          <span class="biz-bullet">•</span>
+          <span class="biz-name">${escapeHtml(row.business_name || "")}</span>
           <span class="${pillClass}" style="margin-left:10px;">${pillText}</span>
         </div>
-        <div class="biz-li-sub">
-          <span class="label">Positions:</span> ${escapeHtml(posText)}
-        </div>
-      </li>
-    `;
-  }
+      </div>
+
+      <div class="biz-row-sub">
+        ${escapeHtml(row.city || "")}, ${escapeHtml(row.state || "")} ${escapeHtml(row.zip || "")}
+      </div>
+
+      <div class="biz-row-pos">
+        <span class="label">Positions:</span> ${escapeHtml(posText)}
+      </div>
+
+      <div class="biz-divider"></div>
+    </div>
+  `;
+}
 
   // Group by "City, ST"
   function groupRows(rows) {
@@ -126,20 +136,20 @@
   }
 
   function renderGrouped(rows) {
-    const groups = groupRows(rows);
+  const groups = groupRows(rows);
 
-    return groups.map((g) => {
-      const header = `${g.city}, ${g.st}`;
-      return `
-        <div class="group">
-          <div class="group-title">• ${escapeHtml(header)}</div>
-          <ul class="biz-ul">
-            ${g.list.map(renderBizLi).join("")}
-          </ul>
+  return groups.map((g) => {
+    const header = `${g.city}, ${g.st}`;
+    return `
+      <div class="group">
+        <div class="group-title">• ${escapeHtml(header)}</div>
+        <div class="group-body">
+          ${g.list.map(renderBizRow).join("")}
         </div>
-      `;
-    }).join("");
-  }
+      </div>
+    `;
+  }).join("");
+}
 
   async function apiGet(path, params) {
     const url = new URL(API_BASE + path);
