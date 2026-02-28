@@ -212,7 +212,7 @@ button:disabled{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
-  gap: 12px;
+  gap: 4px;
 }
 
 /* ONLY business name is bold */
