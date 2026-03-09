@@ -35,7 +35,7 @@ a:hover { text-decoration: underline; }
   z-index: 10;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   padding: 14px 16px;
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(12px);
@@ -43,11 +43,11 @@ a:hover { text-decoration: underline; }
 }
 
 .headerTop {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
   width: 100%;
-  gap: 16px;
+  column-gap: 16px;
 }
 
 .brand {
@@ -78,14 +78,14 @@ a:hover { text-decoration: underline; }
 .navLinkTiny { font-size: 12px; opacity: 0.75; }
 
 .headerTagline {
-  font-size: 28px;
+  justify-self: end;
+  text-align: right;
+  font-size: 24px;
   font-weight: 900;
-  letter-spacing: 0.8px;
-  line-height: 1;
+  letter-spacing: 0.7px;
+  line-height: 1.05;
   opacity: 0.92;
   white-space: nowrap;
-  text-align: right;
-  flex: 0 0 auto;
 }
 
 .container { max-width: 980px; margin: 0 auto; padding: 26px 16px 44px; }
@@ -294,7 +294,7 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
 
   .headerTagline {
     font-size: 20px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.45px;
   }
 
   .nav {
@@ -317,12 +317,7 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
 }
 
 @media (max-width: 520px) {
-  .headerTop {
-    align-items: center;
-  }
-
   .headerTagline {
     font-size: 18px;
-    text-align: right;
   }
 }
