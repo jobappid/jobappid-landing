@@ -293,3 +293,42 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
   }
 
 }
+@media (max-width: 900px) {
+  .topbar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .topbar .brand {
+    display: flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
+  }
+
+  .topbar .logo {
+    width: 124px !important;
+    height: 94px !important;
+  }
+
+  .topbar .nav {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    align-items: start !important;
+  }
+
+  .topbar .nav a,
+  .topbar .navLink,
+  .topbar .navLinkTiny {
+    display: block !important;
+    text-align: center !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    text-decoration: none !important;
+  }
+}
