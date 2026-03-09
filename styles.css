@@ -8,7 +8,6 @@
   --good: #9dffb0;
   --bad: #ff9d9d;
 
-  /* new */
   --glass: rgba(19, 19, 26, 0.55);
   --shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
 }
@@ -44,6 +43,7 @@ a:hover { text-decoration: underline; }
 }
 
 .brand { display: flex; gap: 12px; align-items: center; min-width: 0; }
+
 .logo {
   width: 124px;
   height: 94px;
@@ -52,6 +52,7 @@ a:hover { text-decoration: underline; }
   background: rgba(0, 0, 0, 0);
   border: 1px solid rgba(0, 0, 0, 0);
 }
+
 .brandText { min-width: 0; }
 .brandName { font-weight: 900; letter-spacing: 0.2px; font-size: 18px; }
 .brandTag { color: var(--muted); font-size: 13px; margin-top: 2px; }
@@ -62,9 +63,7 @@ a:hover { text-decoration: underline; }
 
 .container { max-width: 980px; margin: 0 auto; padding: 26px 16px 44px; }
 
-.hero {
-  padding: 6px 0 6px;
-}
+.hero { padding: 6px 0 6px; }
 
 .hero h1 {
   font-size: 44px;
@@ -79,9 +78,8 @@ a:hover { text-decoration: underline; }
   max-width: 820px;
 }
 
-/* =========================
-   CTA BUTTONS
-========================= */
+/* CTA BUTTONS */
+
 .ctaRow {
   display: flex;
   gap: 12px;
@@ -104,6 +102,7 @@ a:hover { text-decoration: underline; }
   text-decoration: none;
   box-shadow: 0 12px 26px rgba(0,0,0,0.25);
 }
+
 .ctaBtn:hover { text-decoration: none; filter: brightness(1.08); }
 .ctaBtn:active { transform: translateY(1px); }
 
@@ -114,9 +113,8 @@ a:hover { text-decoration: underline; }
   box-shadow: none;
 }
 
-/* =========================
-   CARDS
-========================= */
+/* CARDS */
+
 .cards {
   margin-top: 18px;
   display: grid;
@@ -136,9 +134,8 @@ a:hover { text-decoration: underline; }
 .card p, .card li { color: var(--muted); }
 .card ol, .card ul { margin: 0; padding-left: 18px; }
 
-/* =========================
-   SECTIONS
-========================= */
+/* SECTIONS */
+
 .request {
   margin-top: 22px;
   background: var(--glass);
@@ -160,9 +157,8 @@ a:hover { text-decoration: underline; }
   margin: 18px 0;
 }
 
-/* =========================
-   FORM
-========================= */
+/* FORM */
+
 .form { display: grid; gap: 12px; }
 
 .row {
@@ -184,6 +180,7 @@ input {
   outline: none;
   transition: border-color 0.15s ease, filter 0.15s ease;
 }
+
 input:focus {
   border-color: rgba(255, 255, 255, 0.35);
   filter: brightness(1.04);
@@ -199,6 +196,7 @@ button {
   cursor: pointer;
   transition: filter 0.15s ease, transform 0.08s ease;
 }
+
 button:hover { filter: brightness(1.08); }
 button:active { transform: translateY(1px); }
 button:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -208,12 +206,12 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
   font-size: 13px;
   color: var(--muted);
 }
+
 .msg.ok { color: var(--good); }
 .msg.err { color: var(--bad); }
 
-/* =========================
-   FAQ (details/summary)
-========================= */
+/* FAQ */
+
 .faq details {
   background: rgba(19, 19, 26, 0.65);
   border: 1px solid rgba(255, 255, 255, 0.09);
@@ -229,17 +227,16 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
   letter-spacing: -0.1px;
   list-style: none;
 }
+
 .faq summary::-webkit-details-marker { display: none; }
 
 .faq summary::after {
   content: "▾";
   float: right;
   opacity: 0.75;
-  transform: translateY(-1px);
 }
-.faq details[open] summary::after {
-  content: "▴";
-}
+
+.faq details[open] summary::after { content: "▴"; }
 
 .faq p {
   color: rgba(255, 255, 255, 0.75);
@@ -247,21 +244,8 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
   line-height: 1.45;
 }
 
-/* =========================
-   FOOTER LINKS
-========================= */
-.footerLinks {
-  margin-top: 6px;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.footerLinks .tiny { font-size: 12px; opacity: 0.7; }
+/* FOOTER */
 
-/* =========================
-   FOOTER
-========================= */
 .footer {
   border-top: 1px solid var(--line);
   padding: 18px 16px;
@@ -270,44 +254,42 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
   align-items: center;
   color: var(--muted);
 }
+
 .footerRight { display: flex; gap: 14px; }
 .footerRight .tiny { font-size: 12px; opacity: 0.7; }
 
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 900px) {
+/* RESPONSIVE */
 
+@media (max-width: 900px) {
   .cards { grid-template-columns: 1fr; }
   .hero h1 { font-size: 36px; }
   .row { grid-template-columns: 1fr; }
+}
 
-  /* keep your large logo */
-  .logo {
-    width: 124px;
-    height: 94px;
-  }
+/* MOBILE HEADER FIX */
 
-  /* stack header cleanly */
+@media (max-width: 900px) {
+
   .topbar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
+    gap: 10px;
   }
 
-  /* nav moves under logo */
   .nav {
     width: 100%;
-    justify-content: space-between;
-    gap: 10px;
-    font-size: 15px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 8px;
   }
 
-}
+  .nav a,
+  .navLink,
+  .navLinkTiny {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
 
-@media (max-width: 420px) {
-  .hero h1 { font-size: 32px; }
-  .brandName { font-size: 16px; }
-  .brandTag { font-size: 12px; }
-  .ctaBtn { width: 100%; }
 }
