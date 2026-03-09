@@ -277,10 +277,32 @@ button:disabled { opacity: 0.55; cursor: not-allowed; }
    RESPONSIVE
 ========================= */
 @media (max-width: 900px) {
+
   .cards { grid-template-columns: 1fr; }
   .hero h1 { font-size: 36px; }
   .row { grid-template-columns: 1fr; }
-  .logo { width: 96px; height: 70px; }
+
+  /* keep your large logo */
+  .logo {
+    width: 124px;
+    height: 94px;
+  }
+
+  /* stack header cleanly */
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  /* nav moves under logo */
+  .nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 15px;
+  }
+
 }
 
 @media (max-width: 420px) {
